@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.uidser.ppmusic.common.mapper.SingerMapper">
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO table_singer (name,
+                                  detail,
+                                  fans_quantity,
+                                  profile_picture,
+                                  title,
+                                  show_status,
+                                  create_time,
+                                  type)
+        VALUES (#{name},
+                #{detail},
+                #{fansQuantity},
+                #{profilePicture},
+                #{title},
+                #{showStatus},
+                #{createTime},
+                #{type})
+    </insert>
+    <update id="edit">
+        UPDATE table_singer
+        SET
+        name = #{name},
+        detail = #{detail},
+        fans_quantity = #{fansQuantity},
+        profile_picture = #{profilePicture},
+        title = #{title},
+        is_delete = #{isDelete},
+        update_time = #{updateTime},
+        type = #{type},
+        show_status = #{showStatus}
+        WHERE id = #{id}
+    </update>
+    <select id="query" resultType="com.uidser.ppmusic.common.entity.Singer">
+        SELECT * FROM table_singer
+        <where>
+            is_delete = 0
+            <if test="queryText != null and queryText !=''">
+                AND (id = #{queryText} or name like "%"#{queryText}"%")
+            </if>
+        </where>
+    </select>
+    <select id="getByIds" resultType="com.uidser.ppmusic.common.entity.Singer">
+        SELECT id,
+               name,
+               detail,
+               fans_quantity,
+               profile_picture,
+               title,
+               is_delete,
+               create_time,
+               update_time,
+               type,
+               show_status
+        FROM table_singer
+        WHERE id IN
+        <foreach collection="ids" open="(" item="id" separator="," close=")">
+            #{id}
+        </foreach>
+    </select>
+    <select id="page" resultType="com.uidser.ppmusic.common.entity.Singer">
+        SELECT id,
+               name,
+               detail,
+               fans_quantity,
+               profile_picture,
+               title,
+               is_delete,
+               create_time,
+               update_time,
+               show_status,
+               type
+        FROM table_singer
+        <where>
+            is_delete = 0
+            <if test="queryText != null and queryText != ''">
+                AND (
+                    id = #{queryText}
+                    OR
+                    name LIKE "%"#{queryText}"%"
+                    OR
+                    detail name LIKE "%"#{queryText}"%"
+                    OR title LIKE "%"#{queryText}"%"
+                )
+            </if>
+            <if test="startTime != null">
+                AND create_time >= #{startTime}
+            </if>
+            <if test="endTime != null">
+                AND #{endTime} >= create_time
+            </if>
+        </where>
+    </select>
+    <select id="get" resultType="com.uidser.ppmusic.common.entity.Singer">
+        SELECT id,
+        name,
+        detail,
+        fans_quantity,
+        profile_picture,
+        title,
+        is_delete,
+        create_time,
+        update_time,
+        type,
+        show_status
+        FROM table_singer
+        WHERE id = #{id}
+    </select>
+</mapper>

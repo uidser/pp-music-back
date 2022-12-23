@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.uidser.ppmusic.common.mapper.AttributeAttributeValueRelationMapper">
+    <insert id="relation">
+        INSERT INTO table_attribute_attributevalue_relation(media_id, show_status, attribute_id, attribute_value_id)
+        VALUES
+        <foreach collection="list" separator="," item="relation">
+            (#{mediaId}, #{relation.showStatus}, #{relation.id}, #{relation.attributeValueId})
+        </foreach>
+    </insert>
+    <select id="getAttributeAttributeValueRelation" resultType="java.lang.Long">
+        SELECT attribute_value_id FROM table_attribute_attributevalue_relation WHERE attribute_id IN
+        <foreach collection="ids" open="(" separator="," close=")" item="id">
+            #{id}
+        </foreach>
+    </select>
+</mapper>

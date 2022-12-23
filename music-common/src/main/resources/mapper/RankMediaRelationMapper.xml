@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.uidser.ppmusic.common.mapper.RankMediaRelationMapper">
+    <select id="getByRankId" resultType="com.uidser.ppmusic.common.entity.RankMediaRelation">
+        SELECT id,
+               media_id,
+               rank_id,
+               rank_detail,
+               last_rank_date,
+               rank_frequency
+        FROM table_media_rank_relation
+        WHERE rank_id IN
+        <foreach collection="list" open="(" item="item" separator="," close=")">
+            #{item.id}
+        </foreach>
+        AND last_rank_date IN
+        <foreach collection="list" open="(" item="item" separator="," close=")">
+            #{item.rankUpdateTime}
+        </foreach>
+    </select>
+    <select id="getOrderDetail" resultType="com.uidser.ppmusic.common.entity.MediaRankRelation">
+        SELECT id,
+               media_name,
+               media_id,
+               rank_id,
+               rank_detail,
+               last_rank_date,
+               rank_frequency
+        FROM table_media_rank_relation WHERE media_id IN
+        <foreach collection="list" item="item" separator="," open="(" close=")">
+            #{item}
+        </foreach>
+        AND rank_frequency = #{rankFrequency} ORDER BY rank_detail
+    </select>
+</mapper>

@@ -1,0 +1,14 @@
+spring:
+  main:
+    allow-circular-references: true
+  application:
+    name: pp-music-statistics
+  cloud:
+    nacos:
+      config:
+        group: DEFAULT_GROUP
+        namespace: 303ac394-4ad9-4ed2-82a5-1a8fbe662237
+        file-extension: yml
+        server-addr: 192.168.2.193:8848
+      discovery:
+        server-addr: 192.168.2.193:8848

@@ -1,0 +1,12 @@
+spring:
+  application:
+    name: pp-music-gateway
+  cloud:
+    nacos:
+      config:
+        group: DEFAULT_GROUP
+        namespace: 7eae9cb3-eaed-44d3-91ee-c57ead20d3b5
+        file-extension: yml
+        server-addr: 192.168.2.193:8848
+      discovery:
+        server-addr: 192.168.2.193:8848

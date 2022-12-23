@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.uidser.ppmusic.rank.mapper.DaySnapShotMapper">
+
+    <insert id="addDayListenQuantity">
+        INSERT INTO
+        table_day_snapshot(
+        media_id,
+        snapshot_time,
+        listen_quantity,
+        media_type)
+        VALUES
+        <foreach collection="list" item="item" separator=",">
+            (#{item.mediaId}, #{item.snapShotTime}, 1, #{item.mediaType})
+        </foreach>
+        ON DUPLICATE KEY UPDATE listen_quantity = listen_quantity + 1
+    </insert>
+    <select id="getDaySnapShotList" resultType="com.uidser.ppmusic.common.entity.DaySnapShot">
+        SELECT
+            id,
+            media_id,
+            snapshot_time,
+            listen_quantity,
+            media_type
+        FROM table_day_snapshot
+        WHERE snapshot_time >= #{date}
+        ORDER BY listen_quantity DESC
+        LIMIT #{limit}
+    </select>
+</mapper>

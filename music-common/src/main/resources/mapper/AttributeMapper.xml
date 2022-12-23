@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.uidser.ppmusic.common.mapper.AttributeMapper">
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO table_attribute(name, show_status, create_time, component_input_id)
+        VALUES(#{name}, #{showStatus}, #{createTime}, #{componentInputId})
+    </insert>
+    <update id="edit">
+        UPDATE table_attribute SET name = #{name}, show_status = #{showStatus}, update_time = #{updateTime}, component_input_id = #{componentInputId} WHERE id = #{id}
+    </update>
+    <update id="delete">
+        UPDATE table_attribute SET is_delete = 1 WHERE id = #{id}
+    </update>
+    <select id="getByIds" resultType="com.uidser.ppmusic.common.entity.Attribute">
+        SELECT * FROM table_attribute WHERE id IN
+        <foreach collection="ids" open="(" separator="," close=")" item="id">
+            #{id}
+        </foreach>
+    </select>
+</mapper>

@@ -1,0 +1,14 @@
+spring:
+  application:
+    name: pp-music-media
+  cloud:
+    nacos:
+      config:
+        group: DEFAULT_GROUP
+        namespace: 02940c13-1952-488c-b0db-49943952c12c
+        file-extension: yml
+        server-addr: 192.168.2.193:8848
+      discovery:
+        server-addr: 192.168.2.193:8848
+  main:
+    allow-circular-references: true

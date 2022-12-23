@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.uidser.ppmusic.rank.mapper.ListenQuantityRankSnapshotMapper">
+
+    <update id="addPlayQuantity">
+        INSERT INTO
+            table_listen_quantity_rank_snapshot(media_id,
+                                                rank_id,
+                                                rank_frequency,
+                                                create_time,
+                                                snapshot_time,
+                                                listen_quantity,
+                                                media_type)
+        VALUES
+            <foreach collection="list" item="item" separator=",">
+                (#{item.mediaId}, #{item.rankId}, #{item.rankFrequency}, now(), now(), 1, #{item.mediaType})
+            </foreach>
+        ON DUPLICATE KEY UPDATE listen_quantity = listen_quantity + 1
+    </update>
+    <select id="getByRankIdAndFrequency" resultType="com.uidser.ppmusic.common.entity.ListenQuantitySnapshot">
+        SELECT id,
+               rank_id,
+               rank_frequency,
+               media_id,
+               create_time,
+               snapshot_time,
+               listen_quantity
+        FROM table_listen_quantity_rank_snapshot
+        WHERE rank_id = #{rankId} AND rank_frequency = #{frequency} AND media_type = #{mediaType}
+        ORDER BY listen_quantity DESC LIMIT #{showLength}
+    </select>
+</mapper>

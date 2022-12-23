@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.uidser.ppmusic.common.mapper.SongMapper">
+
+    <insert id="insert">
+        INSERT INTO table_song(name, author, song_url, singer_id, album, album_id, song_img, publish_date, song_time, mv_id, is_have_mv, create_time, song_word)
+        VALUES(#{name}, #{author}, #{songUrl}, #{singerId}, #{album}, #{albumId}, #{songImg}, #{publishDate}, #{songTime}, #{mvId}, #{isHaveMv}, #{createTime}, #{songWord})
+    </insert>
+    <update id="changeShowStatus">
+        UPDATE table_song SET show_status = #{status} WHERE id = #{songId}
+    </update>
+    <update id="batchDelete">
+        UPDATE table_song SET is_delete = 1 where id in
+        <foreach collection="ids" open="(" separator="," close=")" item="id">
+            #{id}
+        </foreach>
+    </update>
+    <select id="getAll" resultType="com.uidser.ppmusic.common.entity.Song">
+        SELECT * FROM table_song
+        <where>
+            is_delete = 0
+            <if test="queryText != null and queryText != ''">
+                and (id = #{queryText} or name like "%"#{queryText}"%"
+                or author like "%"#{queryText}"%" or name like "%"#{queryText}"%"
+                or album like "%"#{queryText}"%")
+            </if>
+            <if test="startTime != null">
+                and create_time >= #{startTime}
+            </if>
+            <if test="endTime != null">
+                and #{endTime} >= create_time
+            </if>
+        </where>
+    </select>
+    <select id="getByIds" resultType="com.uidser.ppmusic.common.entity.Song">
+        SELECT * FROM table_song WHERE id IN
+        <foreach collection="ids" open="(" item="id" separator="," close=")">
+            #{id}
+        </foreach>
+    </select>
+</mapper>

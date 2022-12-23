@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.uidser.ppmusic.common.mapper.MvMapper">
+    <insert id="insert">
+        INSERT INTO table_mv(title, mv_url, show_status, publish_date, farward_quantity, song_id, watch_quantity, create_time, pre_publish_date)
+        VALUES(#{title}, #{mvUrl}, #{showStatus}, #{publishDate}, #{forwardQuantity}, #{songId}, #{watchQuantity}, #{createTime}, #{prePublishDate})
+    </insert>
+    <update id="edit">
+        UPDATE table_mv SET title = #{title}, mv_url = #{mvUrl}, show_status = #{showStatus}, publish_date = #{publishDate}, forward_quantity = #{forwardQuantity}, song_id = #{songId}, watch_quantity = #{watchQuantity}, update_time = #{updateTime}, pre_publish_date = #{prePublishDate} WHERE id = #{id};
+    </update>
+    <update id="changeShowStatus">
+        UPDATE table_mv SET show_status = #{status} WHERE id = #{mvId}
+    </update>
+    <update id="batchDelete">
+        UPDATE table_mv SET is_delete = 1 WHERE id IN
+        <foreach collection="ids" open="(" item="id" separator="," close=")">
+            #{id}
+        </foreach>
+    </update>
+    <select id="page" resultType="com.uidser.ppmusic.common.entity.vo.MvReturnVo">
+        SELECT * FROM table_mv
+        <where>
+            is_delete = 0
+            <if test="queryText != null and queryText != ''">
+                and (id = #{queryText} or title like "%"#{queryText}"%")
+            </if>
+            <if test="startTime !=null">
+                and create_time >= #{startTime}
+            </if>
+            <if test="endTime !=null">
+                and   #{endTime} >= create_time
+            </if>
+        </where>
+    </select>
+</mapper>

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.uidser.ppmusic.common.mapper.CategoryAttributeGroupRelationMapper">
+    <insert id="insertAttributeGroupCategoryRelation">
+        INSERT INTO table_category_attribute_group_relation(category_id, attribute_group_id) VALUES
+        <foreach collection="attributeGroup.categoryIdList" separator="," item="categoryId">
+            (#{categoryId}, #{attributeGroup.id})
+        </foreach>
+    </insert>
+    <delete id="deleteRelation">
+        DELETE FROM table_category_attribute_group_relation WHERE attribute_group_id = #{id}
+    </delete>
+    <delete id="deleteRelationByCategoryIds">
+        DELETE FROM table_category_attribute_group_relation WHERE category_id IN
+        <foreach collection="ids" open="(" item="id" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+    <select id="getRelation" resultType="com.uidser.ppmusic.common.entity.CategoryAttributeGroupRelation">
+        SELECT * FROM table_category_attribute_group_relation WHERE attribute_group_id IN
+        <foreach collection="ids" open="(" separator="," close=")" item="id">
+            #{id}
+        </foreach>
+    </select>
+    <select id="getByCategoryId" resultType="java.lang.Long">
+        SELECT attribute_group_id FROM table_category_attribute_group_relation WHERE category_id = #{id}
+    </select>
+</mapper>

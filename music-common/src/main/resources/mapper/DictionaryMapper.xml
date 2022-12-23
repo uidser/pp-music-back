@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.uidser.ppmusic.common.mapper.DictionaryMapper">
+    <insert id="insert">
+        INSERT INTO table_dictionary(parent_id, name, type, redirect_url, create_time)
+        VALUES (#{parentId}, #{name}, #{type}, #{redirectUrl}, #{createTime})
+    </insert>
+    <update id="edit">
+        UPDATE table_dictionary SET parent_id = #{parentId}, name = #{name}, type = #{type}, redirect_url = #{redirectUrl}, show_status = #{showStatus}, is_delete = #{isDelete}, update_time = #{updateTime} WHERE id = #{id}
+    </update>
+    <select id="getAll" resultType="com.uidser.ppmusic.common.entity.Dictionary">
+        SELECT * FROM table_dictionary
+        <where>
+            is_delete = 0
+            <if test="queryText != null and queryText !=''">
+                and (id = #{queryText} or name like "%"#{queryText}"%")
+            </if>
+        </where>
+    </select>
+    <select id="getById" resultType="com.uidser.ppmusic.common.entity.Dictionary">
+        SELECT * FROM table_dictionary WHERE id = #{id}
+    </select>
+</mapper>

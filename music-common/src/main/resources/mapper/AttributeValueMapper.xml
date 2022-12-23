@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.uidser.ppmusic.common.mapper.AttributeValueMapper">
+    <insert id="insert" useGeneratedKeys="true" keyProperty="attributeValueId">
+        INSERT INTO table_attribute_value(value, create_time)
+        VALUES
+        <foreach collection="list" item="attributeValue" separator=",">
+            (#{attributeValue.value}, #{attributeValue.createTime})
+        </foreach>
+    </insert>
+    <update id="update">
+        UPDATE FROM table_attribute_value SET value = CASE id
+        <foreach collection="list" item="attribute">
+            WHEN attribute.attributeValueId THEN attribute.value
+        </foreach>
+        WHEN id IN
+        <foreach collection="list" open="(" item="attribute" separator="," close=")">
+            #{attribute.attributeValueId}
+        </foreach>
+    </update>
+</mapper>

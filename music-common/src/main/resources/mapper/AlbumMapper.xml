@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.uidser.ppmusic.common.mapper.AlbumMapper">
+
+    <select id="query" resultType="com.uidser.ppmusic.common.entity.Album">
+        SELECT * FROM table_album
+        <where>
+            is_delete = 0
+            <if test="queryText != null and queryText != ''">
+                and (id = #{queryText} or name like "%"#{queryText}"%")
+            </if>
+        </where>
+    </select>
+</mapper>

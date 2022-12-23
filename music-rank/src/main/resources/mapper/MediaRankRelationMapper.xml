@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.uidser.ppmusic.rank.mapper.MediaRankRelationMapper">
+    <insert id="insert">
+        INSERT INTO table_media_rank_relation(media_id,
+                                              rank_id,
+                                              rank_detail,
+                                              last_rank_date,
+                                              rank_frequency,
+                                              media_name,
+                                              step,
+                                              growth_rate,
+                                              listen_quantity)
+        VALUES
+        <foreach collection="list" item="item" separator="," index="index">
+            (#{item.mediaId}, #{item.rankId}, #{item.rankDetail}, #{item.lastRankDate}, #{item.rankFrequency}, #{item.mediaName}, #{item.step}, #{item.growthRate}, #{item.listenQuantity})
+        </foreach>
+    </insert>
+    <select id="getByOrder" resultType="com.uidser.ppmusic.common.entity.MediaRankRelation">
+        SELECT id,
+               media_id,
+               rank_id,
+               rank_detail,
+               last_rank_date,
+               rank_frequency,
+               media_name,
+               step,
+               growth_rate,
+               listen_quantity
+        FROM table_media_rank_relation
+        WHERE rank_id = #{rankId} AND rank_frequency = #{frequency}
+    </select>
+    <select id="getMap" resultType="com.uidser.ppmusic.common.entity.MediaRankRelation">
+        SELECT id,
+               media_name,
+               media_id,
+               listen_quantity,
+               rank_id,
+               growth_rate,
+               step,
+               rank_detail,
+               last_rank_date,
+               rank_frequency
+        FROM table_media_rank_relation WHERE media_id = #{mediaId} AND rank_id = #{rankId} ORDER BY last_rank_date
+    </select>
+</mapper>

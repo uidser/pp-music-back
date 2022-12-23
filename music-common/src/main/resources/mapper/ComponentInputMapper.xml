@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.uidser.ppmusic.common.mapper.ComponentInputMapper">
+
+    <select id="getAll" resultType="com.uidser.ppmusic.common.entity.ComponentInput">
+        SELECT * FROM table_component_input
+    </select>
+    <select id="getByIds" resultType="com.uidser.ppmusic.common.entity.ComponentInput">
+        SELECT * FROM table_component_input WHERE id IN
+        <foreach collection="ids" open="(" item="id" separator="," close=")">
+            #{id}
+        </foreach>
+    </select>
+</mapper>

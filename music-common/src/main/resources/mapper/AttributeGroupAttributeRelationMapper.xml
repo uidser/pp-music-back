@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.uidser.ppmusic.common.mapper.AttributeGroupAttributeRelationMapper">
+    <insert id="insert">
+        INSERT INTO table_attribute_group_attribute_relation(attribute_id, attribute_group_id)
+        VALUES(#{id}, #{attributeGroupId})
+    </insert>
+    <update id="deleteRelationByAttributeGroupId">
+        DELETE FROM table_attribute_group_attribute_relation WHERE attribute_group_id = #{id}
+    </update>
+    <delete id="deleteRelationByAttributeId">
+        DELETE FROM table_attribute_group_attribute_relation WHERE attribute_id = #{id}
+    </delete>
+    <select id="getRelation" resultType="java.lang.Long">
+        SELECT attribute_id FROM table_attribute_group_attribute_relation WHERE attribute_group_id = #{id}
+    </select>
+    <select id="getByAttributeGroupIds" resultType="java.lang.Long">
+        SELECT attribute_id FROM table_attribute_group_attribute_relation WHERE attribute_group_id IN
+        <foreach collection="ids" open="(" separator="," close=")" item="id">
+            #{id}
+        </foreach>
+    </select>
+    <select id="getRelationByAttributeId" resultType="java.lang.Long">
+        SELECT attribute_group_id FROM table_attribute_group_attribute_relation WHERE attribute_id = #{id}
+    </select>
+    <select id="getRelationByAttributeGroupIds"
+            resultType="com.uidser.ppmusic.common.entity.AttributeGroupAttributeRelation">
+        SELECT * FROM table_attribute_group_attribute_relation WHERE attribute_group_id IN
+        <foreach collection="ids" open="(" separator="," close=")" item="id">
+            #{id}
+        </foreach>
+    </select>
+</mapper>

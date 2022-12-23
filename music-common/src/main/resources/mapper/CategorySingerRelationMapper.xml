@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.uidser.ppmusic.common.mapper.CategorySingerRelationMapper">
+
+    <insert id="insert">
+        INSERT INTO table_category_singer_relation(category_id,
+                                                   singer_id)
+        VALUES
+            <foreach collection="list" separator="," item="item">
+                (#{item}, #{id})
+            </foreach>
+    </insert>
+    <select id="getAll" resultType="com.uidser.ppmusic.common.entity.Category">
+        SELECT id,
+               parent_id,
+               name,
+               show_status,
+               is_delete,
+               create_time,
+               update_time
+        FROM table_category
+        WHERE id IN (SELECT category_id FROM table_category_singer_relation GROUP BY category_id)
+    </select>
+    <delete id="deleteRelation">
+        DELETE FROM table_category_singer_relation WHERE singer_id = #{id}
+    </delete>
+    <select id="getRelationBySingerIds" resultType="com.uidser.ppmusic.common.entity.CategorySingerRelation">
+        SELECT
+            id,
+            category_id,
+            singer_id
+        FROM table_category_singer_relation
+        WHERE singer_id in
+        <foreach collection="list" open="(" item="id" close=")" separator=",">
+            #{id}
+        </foreach>
+    </select>
+    <select id="getRelationByCategoryIds" resultType="com.uidser.ppmusic.common.entity.Singer">
+        SELECT table_singer.*
+        FROM table_category_singer_relation
+        LEFT JOIN table_singer ON singer_id = table_singer.id
+        WHERE category_id IN
+        <foreach collection="list" open="(" separator="," close=")" item="id">
+            #{id}
+        </foreach>
+    </select>
+</mapper>

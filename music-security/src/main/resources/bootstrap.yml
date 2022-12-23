@@ -1,0 +1,16 @@
+spring:
+  redis:
+    host: 192.168.56.110
+    port: 6379
+    password: admin
+  application:
+    name: pp-music-security
+  cloud:
+    nacos:
+      config:
+        group: DEFAULT_GROUP
+        namespace: 73e976c8-cf33-4f5c-9309-78bc0aba1092
+        file-extension: yml
+        server-addr: 192.168.2.193:8848
+      discovery:
+        server-addr: 192.168.2.193:8848

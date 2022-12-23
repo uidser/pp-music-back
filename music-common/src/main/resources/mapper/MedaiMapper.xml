@@ -1,0 +1,258 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.uidser.ppmusic.common.mapper.MediaMapper">
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO table_media(name,
+                                author,
+                                media_url,
+                                singer_id,
+                                album,
+                                album_id,
+                                favorite_quantity,
+                                media_profile_picture_img,
+                                publish_date,
+                                media_time,
+                                mv_id,
+                                type,
+                                is_have_mv,
+                                create_time,
+                                update_time,
+                                word,
+                                mv,
+                                is_delete,
+                                show_status,
+                                pre_publish_date
+                                ) VALUES(
+                                #{name},
+                                #{author},
+                                #{mediaUrl},
+                                #{singerIdList},
+                                #{album},
+                                #{albumId},
+                                #{favoriteQuantity},
+                                #{mediaProfilePictureImg},
+                                #{publishDate},
+                                #{mediaTime},
+                                #{mvId},
+                                #{type},
+                                #{isHaveMv},
+                                #{createTime},
+                                #{updateTime},
+                                #{word},
+                                #{mv},
+                                #{isDelete},
+                                #{showStatus},
+                                #{prePublishDate}
+                                      )
+    </insert>
+    <update id="addPlayQuantitySelf">
+        INSERT INTO
+            table_media(id,
+                        name,
+                        author,
+                        media_url,
+                        singer_id,
+                        album,
+                        album_id,
+                        favorite_quantity,
+                        media_profile_picture_img,
+                        publish_date,
+                        media_time,
+                        mv_id,
+                        type,
+                        is_have_mv,
+                        create_time,
+                        update_time,
+                        word,
+                        mv,
+                        is_delete,
+                        show_status,
+                        pre_publish_date)
+        VALUES
+        <foreach collection="list" item="item" separator=",">
+            (#{item.mediaId},
+             '',
+             '',
+             '',
+             0,
+             '',
+             0,
+             0,
+             '',
+             now(),
+             '',
+             0,
+             0,
+             0,
+             now(),
+             now(),
+             '',
+             '',
+             0,
+             0,
+             now())
+        </foreach>
+        ON DUPLICATE KEY UPDATE play_quantity = play_quantity + 1
+    </update>
+    <update id="editMediaUrl">
+        UPDATE table_media SET ${column} = #{url} WHERE id = #{mediaId}
+    </update>
+    <update id="update">
+        UPDATE table_media
+        SET name = #{name},
+            author = #{author},
+            media_url = #{mediaUrl},
+            album = #{albumId},
+            album_id = #{albumId},
+            favorite_quantity = #{favoriteQuantity},
+            media_profile_picture_img = #{mediaProfilePictureImg},
+            publish_date = #{publishDate},
+            media_time = #{mediaTime},
+            mv_id = #{mvId},
+            type = #{type},
+            is_have_mv = #{isHaveMv},
+            update_time = #{updateTime},
+            word = #{word},
+            mv = #{mv},
+            is_delete = #{isDelete},
+            show_status = #{showStatus},
+            pre_publish_date = #{prePublishDate}
+        WHERE id = #{id}
+    </update>
+    <update id="changeShowStatus">
+        UPDATE table_media SET show_status = #{showStatus} WHERE id = #{mediaId}
+    </update>
+    <update id="batchDelete">
+        UPDATE table_media SET is_delete = 1 WHERE id IN
+        <foreach collection="ids" open="(" item="id" separator="," close=")">
+            #{id}
+        </foreach>
+    </update>
+    <select id="index" resultType="com.uidser.ppmusic.common.entity.Media">
+        SELECT * FROM table_media WHERE type = #{type} AND show_status = 1 AND is_delete = 0 ORDER BY create_time DESC limit #{limit}
+    </select>
+    <select id="getByTerm" resultType="com.uidser.ppmusic.common.entity.Media">
+        SELECT id,
+               name,
+               author,
+               media_url,
+               singer_id,
+               album,
+               album_id,
+               favorite_quantity,
+               media_profile_picture_img,
+               publish_date,
+               media_time,
+               mv_id,
+               type,
+               is_have_mv,
+               create_time,
+               update_time,
+               word,
+               mv,
+               is_delete,
+               show_status,
+               pre_publish_date
+        FROM table_media
+        <where>
+            is_delete = 0
+            <if test="queryText != null and queryText != ''">
+                AND (id = #{queryText} OR name LIKE "%"#{queryText}"%"
+                    OR author LIKE "%"#{queryText}"%" OR album LIKE "%"#{queryText}"%"
+                )
+            </if>
+            <if test="startTime != null">
+                AND create_time >= #{startTime}
+            </if>
+            <if test="endTime != null">
+                AND #{endTime} >= create_time
+            </if>
+            <if test="mediaType != null and mediaType > 0">
+                AND type = #{mediaType}
+            </if>
+        </where>
+        ORDER BY create_time DESC
+    </select>
+    <select id="getRankMediaList" resultType="com.uidser.ppmusic.common.entity.Media">
+        SELECT id,
+               name,
+               author,
+               media_url,
+               singer_id,
+               album,
+               album_id,
+               favorite_quantity,
+               media_profile_picture_img,
+               publish_date,
+               media_time,
+               mv_id,
+               type,
+               is_have_mv,
+               create_time,
+               update_time,
+               word,
+               mv,
+               is_delete,
+               show_status,
+               pre_publish_date
+        FROM table_media
+        <where>
+            is_delete = 0
+            <if test="queryVo.queryText != null and queryVo.queryText != ''">
+                AND (id = #{queryVo.queryText} OR name LIKE "%"#{queryVo.queryText}"%"
+                OR author LIKE "%"#{queryVo.queryText}"%" OR album LIKE "%"#{queryVo.queryText}"%"
+                )
+            </if>
+            <if test="queryVo.startTime != null">
+                AND create_time >= #{queryVo.startTime}
+            </if>
+            <if test="queryVo.endTime != null">
+                AND #{queryVo.endTime} >= create_time
+            </if>
+            AND id IN
+            <foreach collection="ids" open="(" item="id" separator="," close=")">
+                #{id}
+            </foreach>
+        </where>
+    </select>
+    <select id="getOrderDetail" resultType="com.uidser.ppmusic.common.entity.MediaRankRelation">
+
+    </select>
+    <select id="getByIds" resultType="com.uidser.ppmusic.common.entity.Media">
+        SELECT id,
+               name,
+               author,
+               media_url,
+               singer_id,
+               album,
+               album_id,
+               play_quantity,
+               favorite_quantity,
+               media_profile_picture_img,
+               publish_date,
+               media_time,
+               mv_id,
+               type,
+               is_have_mv,
+               create_time,
+               update_time,
+               word,
+               mv,
+               is_delete,
+               show_status,
+               pre_publish_date
+        FROM table_media
+        WHERE id IN
+        <foreach collection="list" open="(" item="id" separator="," close=")">
+            #{id}
+        </foreach>
+        <if test="type != null and type > 0">
+            AND type = #{type}
+        </if>
+        ORDER BY play_quantity DESC
+        <if test="limit != null and limit > 0">
+            LIMIT #{limit}
+        </if>
+    </select>
+</mapper>

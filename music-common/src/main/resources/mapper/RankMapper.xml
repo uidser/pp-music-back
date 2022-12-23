@@ -1,0 +1,203 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.uidser.ppmusic.common.mapper.RankMapper">
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO table_rank (title,
+                                introducation,
+                                name,
+                                type,
+                                show_length,
+                                sort,
+                                rank_time,
+                                profile_picture,
+                                create_time,
+                                show_status,
+                                rank_frequency)
+                    VALUES (#{title},
+                            #{introducation},
+                            #{name},
+                            #{type},
+                            #{showLength},
+                            #{sort},
+                            #{rankTime},
+                            #{profilePicture},
+                            #{createTime},
+                            #{showStatus},
+                            #{rankFrequency})
+    </insert>
+    <update id="addFrequency">
+        UPDATE table_rank SET rank_frequency = rank_frequency + 1, rank_update_time = #{date} WHERE id = #{rankId}
+    </update>
+    <update id="changeShowStatus">
+        UPDATE table_rank SET show_status = #{status} WHERE id = #{rankId}
+    </update>
+    <update id="batchDelete">
+        UPDATE table_rank SET is_delete = 1 WHERE id IN
+        <foreach collection="ids" open="(" item="id" separator="," close=")">
+            #{id}
+        </foreach>
+    </update>
+    <update id="edit">
+        UPDATE table_rank SET
+                              title = #{title},
+                              introducation = #{introducation},
+                              name = #{name},
+                              type = #{type},
+                              show_length = #{showLength},
+                              sort = #{sort},
+                              rank_time = #{rankTime},
+                              update_time = #{updateTime},
+                              show_status = #{showStatus},
+                              rank_time = #{rankTime}
+                          WHERE id = #{id}
+    </update>
+    <select id="index" resultType="com.uidser.ppmusic.common.entity.Rank">
+        SELECT id,
+               title,
+               introducation,
+               name,
+               type,
+               sort,
+               rank_time,
+               profile_picture,
+               rank_update_time,
+               create_time,
+               rank_frequency,
+               update_time,
+               is_delete,
+               show_status
+        FROM table_rank
+        ORDER BY sort DESC
+        LIMIT #{limit}
+    </select>
+    <select id="page" resultType="com.uidser.ppmusic.common.entity.Rank">
+        SELECT id,
+               title,
+               introducation,
+               name,
+               type,
+               rank_frequency,
+               sort,
+               rank_time,
+               profile_picture,
+               rank_update_time,
+               create_time,
+               update_time,
+               is_delete,
+               show_status
+        FROM table_rank
+        <where>
+            is_delete = 0
+            <if test="queryText != null and queryText != ''">
+                AND (id = #{queryText} OR title LIKE "%"#{QueryText}"%"
+                    OR introducation LIKE "%"#{QueryText}"%"
+                    OR name LIKE "%"#{QueryText}"%"
+                )
+            </if>
+            <if test="startTime != null">
+                AND create_time >= #{startTime}
+            </if>
+            <if test="endTime != null">
+                AND #{endTime} >= create_time
+            </if>
+        </where>
+        ORDER BY sort DESC
+    </select>
+    <resultMap id="rankDetailMediaList" type="com.uidser.ppmusic.common.entity.Rank">
+        <result property="id" column="id"></result>
+        <result property="title" column="title"></result>
+        <result property="introducation" column="introducation"></result>
+        <result property="name" column="name"></result>
+        <result property="type" column="type"></result>
+        <result property="sort" column="sort"></result>
+        <result property="rankTime" column="rank_time"></result>
+        <result property="rankFrequency" column="rank_frequency"></result>
+        <result property="profilePicture" column="profile_picture"></result>
+        <result property="rankUpdateTime" column="rank_update_time"></result>
+        <result property="createTime" column="create_time"></result>
+        <result property="updateTime" column="update_time"></result>
+        <result property="isDelete" column="is_delete"></result>
+        <result property="showStatus" column="show_status"></result>
+        <collection property="rankMediaIdList" column="media_id" javaType="java.lang.Long">
+            <result column="media_id"></result>
+        </collection>
+    </resultMap>
+    <select id="getRankDetailMediaList" resultMap="rankDetailMediaList">
+        SELECT
+            table_rank.*,
+            table_media_rank_relation.media_id
+        FROM
+            table_rank
+        LEFT JOIN table_media_rank_relation ON table_media_rank_relation.rank_id = table_rank.id
+        WHERE
+        table_rank.id = #{rankId} AND (SELECT show_length FROM table_rank WHERE id = #{rankId}) >= table_media_rank_relation.rank_detail
+        AND table_media_rank_relation.rank_frequency = #{frequency}
+        AND table_rank.show_status = 1 AND table_rank.is_delete = 0
+        ORDER BY
+        table_media_rank_relation.rank_detail
+    </select>
+    <select id="get" resultType="com.uidser.ppmusic.common.entity.Rank">
+        SELECT id,
+               title,
+               introducation,
+               name,
+               type,
+               rank_frequency,
+               sort,
+               rank_time,
+               profile_picture,
+               rank_update_time,
+               create_time,
+               update_time,
+               is_delete,
+               show_status,
+               show_length,
+               rank_frequency
+        FROM table_rank
+        WHERE id = #{id}
+    </select>
+    <resultMap id="entity" type="com.uidser.ppmusic.common.entity.Rank">
+        <result property="id" column="id"></result>
+        <result property="title" column="title"></result>
+        <result property="introducation" column="introducation"></result>
+        <result property="name" column="name"></result>
+        <result property="type" column="type"></result>
+        <result property="sort" column="sort"></result>
+        <result property="rankTime" column="rank_time"></result>
+        <result property="rankFrequency" column="rank_frequency"></result>
+        <result property="profilePicture" column="profile_picture"></result>
+        <result property="rankUpdateTime" column="rank_update_time"></result>
+        <result property="createTime" column="create_time"></result>
+        <result property="updateTime" column="update_time"></result>
+        <result property="isDelete" column="is_delete"></result>
+        <result property="showStatus" column="show_status"></result>
+        <result property="rankListenQuantity" column="rank_listen_quantity"></result>
+        <collection property="rankMediaIdList" column="media_id" javaType="java.lang.Long">
+            <result column="media_id"></result>
+        </collection>
+    </resultMap>
+    <select id="getAll" resultMap="entity">
+        SELECT
+            table_rank.*,
+            table_media_rank_relation.media_id
+        FROM
+            table_rank
+                LEFT OUTER JOIN table_media_rank_relation ON table_media_rank_relation.rank_id = table_rank.id
+                AND table_media_rank_relation.rank_frequency = table_rank.rank_frequency
+        WHERE
+                ( SELECT show_length FROM table_rank WHERE id = table_media_rank_relation.rank_id ) >= table_media_rank_relation.rank_detail
+            AND table_rank.show_status = 1 AND table_rank.is_delete = 0
+        ORDER BY
+            table_media_rank_relation.rank_detail
+    </select>
+    <select id="getListenQuantity" resultType="com.uidser.ppmusic.common.entity.Rank">
+        SELECT
+            table_rank.id,
+            sum( table_media_rank_relation.listen_quantity ) rank_listen_quantity
+        FROM
+            table_rank
+                LEFT JOIN table_media_rank_relation ON table_media_rank_relation.rank_id = table_rank.id
+                AND table_media_rank_relation.rank_frequency = table_rank.rank_frequency
+        GROUP BY table_rank.id
+    </select>
+</mapper>
