@@ -49,7 +49,7 @@ public class SingerController {
         return new R().ok();
     }
 
-    @PutMapping("/changeShowStatus/{singerId}/{showStatus}")
+    @PostMapping("/changeShowStatus/{singerId}/{showStatus}")
     public R changeShowStatus(@PathVariable Long singerId,
                               @PathVariable Integer showStatus) {
         singerService.changeShowStatus(singerId, showStatus);
