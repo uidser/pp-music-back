@@ -19,4 +19,8 @@ public interface SingerMapper {
     Singer get(Long id);
 
     void edit(Singer singer);
+
+    void changeShowStatus(@Param("singerId") Long singerId, @Param("showStatus") Integer showStatus);
+
+    void batchDelete(@Param("list") List<Long> singerIdList);
 }

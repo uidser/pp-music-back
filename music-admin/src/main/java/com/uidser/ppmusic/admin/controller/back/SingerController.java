@@ -8,6 +8,7 @@ import com.uidser.ppmusic.common.service.SingerService;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import javax.validation.constraints.NotEmpty;
 import java.util.Arrays;
 import java.util.List;
 
@@ -45,6 +46,19 @@ public class SingerController {
     @PutMapping("/edit")
     public R edit(@RequestBody Singer singer) {
         singerService.edit(singer);
+        return new R().ok();
+    }
+
+    @PutMapping("/changeShowStatus/{singerId}/{showStatus}")
+    public R changeShowStatus(@PathVariable Long singerId,
+                              @PathVariable Integer showStatus) {
+        singerService.changeShowStatus(singerId, showStatus);
+        return new R().ok();
+    }
+
+    @DeleteMapping("/batchDelete")
+    public R batchDelete(@NotEmpty(message = "数组内容为空") @RequestBody List<Long> singerIdList) {
+        singerService.batchDelete(singerIdList);
         return new R().ok();
     }
 

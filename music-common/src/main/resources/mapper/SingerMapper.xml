@@ -108,4 +108,15 @@
         FROM table_singer
         WHERE id = #{id}
     </select>
+    <update id="changeShowStatus">
+        UPDATE table_singer SET show_status = #{showStatus} WHERE id = #{id}
+    </update>
+    <update id="batchDelete">
+        UPDATE table_singer
+        SET is_delete = 1
+        WHERE id IN
+        <foreach collection="list" open="(" item="id" separator="," close=")">
+            #{id}
+        </foreach>
+    </update>
 </mapper>

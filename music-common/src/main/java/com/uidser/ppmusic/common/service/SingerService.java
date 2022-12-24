@@ -22,4 +22,8 @@ public interface SingerService {
     void edit(Singer singer);
 
     List<Singer> queryByCategory(List<Long> categoryIdList);
+
+    void changeShowStatus(Long singerId, Integer showStatus);
+
+    void batchDelete(List<Long> singerIdList);
 }

@@ -100,9 +100,10 @@ public class SingerServiceImpl implements SingerService {
         }, threadPoolExecutor);
         CompletableFuture<Void> songListMvListCompletableFuture = CompletableFuture.runAsync(() -> {
             List<Long> mediaIdList = singerMediaRelationService.get(id);
-            List<Media> mediaList = mediaService.getByIds(mediaIdList, 11, 10);
-            singerInfo.setSongList(mediaList);
-            mediaService.getByIds(mediaIdList, 12, 10);
+            if(mediaIdList.size() > 0) {
+                List<Media> mediaList = mediaService.getByIds(mediaIdList, 11, 10);
+                singerInfo.setSongList(mediaList);
+            }
         });
         CompletableFuture<Void> all = CompletableFuture.allOf(singerInfoCompletableFuture, songListMvListCompletableFuture);
         try {
@@ -126,5 +127,15 @@ public class SingerServiceImpl implements SingerService {
     @Override
     public List<Singer> queryByCategory(List<Long> categoryIdList) {
         return categorySingerRelationService.getRelationByCategoryIds(categoryIdList);
+    }
+
+    @Override
+    public void changeShowStatus(Long singerId, Integer showStatus) {
+        singerMapper.changeShowStatus(singerId, showStatus);
+    }
+
+    @Override
+    public void batchDelete(List<Long> singerIdList) {
+        singerMapper.batchDelete(singerIdList);
     }
 }

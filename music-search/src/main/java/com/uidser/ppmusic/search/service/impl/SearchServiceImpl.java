@@ -15,6 +15,7 @@ import com.uidser.ppmusic.common.entity.vo.QueryVo;
 import com.uidser.ppmusic.search.entity.QueryReturnVo;
 import com.uidser.ppmusic.search.service.SearchService;
 import org.springframework.beans.BeanUtils;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -104,18 +105,25 @@ public class SearchServiceImpl implements SearchService {
 
     @Override
     public List<Singer> queryByCategory(Map<String, String> categoryIdMap) {
+        List<Query> queryList = new ArrayList<>();
         Set<String> stringSet = categoryIdMap.keySet();
         List<FieldValue> fieldValueList = new ArrayList<>();
         for (String key: stringSet) {
             Long categoryId = Long.valueOf(categoryIdMap.get(key));
             FieldValue fieldValue = FieldValue.of(categoryId);
             fieldValueList.add(fieldValue);
+            Query query = Query.of(q -> q.nested(nq -> {
+                nq.path("categoryList");
+                nq.query(q2 -> q2.bool(bq -> bq.must(q3 -> q3.term(tq -> tq.field("categoryList.id").value(categoryId)))));
+                return nq;
+            }));
+            queryList.add(query);
         }
-        SearchRequest searchRequest = SearchRequest.of(sr -> sr.query(q -> q.nested(nq -> {
-            nq.path("categoryList");
-            nq.query(q2 -> q2.bool(bq -> bq.must(q3 -> q3.terms(tq -> tq.field("categoryList.id").terms(tqf -> tqf.value(fieldValueList))))));
-            return nq;
-        })));
+        SearchRequest searchRequest = SearchRequest.of(sr -> {
+            sr.index("singer");
+            sr.query(q -> q.bool(bq -> bq.must(queryList)));
+            return sr;
+        });
         SearchResponse<Singer> searchResponse = null;
         try {
             searchResponse = elasticsearchClient.search(searchRequest, Singer.class);
