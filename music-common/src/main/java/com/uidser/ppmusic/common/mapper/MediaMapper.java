@@ -11,7 +11,7 @@ import java.util.List;
 public interface MediaMapper {
     void insert(Media media);
 
-    void editMediaUrl(@Param("mediaId") Integer mediaId, @Param("url") String url, @Param("column") String column);
+    void editMediaUrl(@Param("mediaId") Long mediaId, @Param("url") String url, @Param("column") String column);
 
     List<Media> index(@Param("type") Integer type, @Param("limit") Integer limit);
 

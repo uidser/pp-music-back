@@ -3,6 +3,7 @@ package com.uidser.ppmusic.common.service;
 import com.github.pagehelper.PageInfo;
 import com.uidser.ppmusic.common.entity.ListenQuantitySnapshot;
 import com.uidser.ppmusic.common.entity.Media;
+import com.uidser.ppmusic.common.entity.Singer;
 import com.uidser.ppmusic.common.entity.SingerListPage;
 import com.uidser.ppmusic.common.entity.vo.IndexVo;
 import com.uidser.ppmusic.common.entity.vo.MediaCommitVo;
@@ -13,7 +14,7 @@ import java.util.List;
 public interface MediaService {
     Long insert(MediaCommitVo media);
 
-    void editMediaUrl(Integer mediaId, String url, String column);
+    void editMediaUrl(Long mediaId, String url, String column);
 
     IndexVo play();
 
@@ -36,4 +37,6 @@ public interface MediaService {
     SingerListPage singerList();
 
     List<Media> getByIds(List<Long> mediaIdList, Integer type, Integer limit);
+
+    List<Singer> getAuthor(Long mediaId);
 }

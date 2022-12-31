@@ -9,6 +9,7 @@ import lombok.Data;
 import org.springframework.validation.annotation.Validated;
 
 import javax.validation.constraints.*;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -49,9 +50,9 @@ public class Media {
 
     private Long mvId;
 
-    private int type;
+    private Integer type;
 
-    private int isHaveMv;
+    private Integer isHaveMv;
 
     private Date createTime;
 
@@ -61,13 +62,15 @@ public class Media {
 
     private String mv;
 
-    private int isDelete;
+    private Integer isDelete;
 
-    private int showStatus;
+    private Integer showStatus;
 
     @Future(message = "与发布时间必须大于当前时间", groups = {Insert.class})
     private Date prePublishDate;
 
     private Long playQuantity;
+
+    private List<MediaSingerESModel> singer = new ArrayList<>();
     
 }

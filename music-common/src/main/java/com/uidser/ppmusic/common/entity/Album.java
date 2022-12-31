@@ -3,6 +3,7 @@ package com.uidser.ppmusic.common.entity;
 import lombok.Data;
 
 import java.util.Date;
+import java.util.List;
 
 @Data
 public class Album {
@@ -18,5 +19,6 @@ public class Album {
     private Integer showStatus;
     private Date createTime;
     private Date updateTime;
+    private List<Long> singerIds;
 
 }

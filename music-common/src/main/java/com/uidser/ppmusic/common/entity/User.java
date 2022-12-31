@@ -17,5 +17,6 @@ public class User {
     private Date createTime;
     private Date updateTime;
     private Date logoutTime;
+    private Integer isEnable;
 
 }

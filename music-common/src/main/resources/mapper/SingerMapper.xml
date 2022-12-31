@@ -81,8 +81,9 @@
                     OR
                     name LIKE "%"#{queryText}"%"
                     OR
-                    detail name LIKE "%"#{queryText}"%"
-                    OR title LIKE "%"#{queryText}"%"
+                    detail LIKE "%"#{queryText}"%"
+                    OR
+                    title LIKE "%"#{queryText}"%"
                 )
             </if>
             <if test="startTime != null">
@@ -109,7 +110,7 @@
         WHERE id = #{id}
     </select>
     <update id="changeShowStatus">
-        UPDATE table_singer SET show_status = #{showStatus} WHERE id = #{id}
+        UPDATE table_singer SET show_status = #{showStatus} WHERE id = #{singerId}
     </update>
     <update id="batchDelete">
         UPDATE table_singer

@@ -47,7 +47,7 @@ public class WebSecurityConfig {
         return new WebSecurityCustomizer() {
             @Override
             public void customize(WebSecurity web) {
-                web.ignoring().antMatchers("/security/login", "/oss/callback",  "/snapshot/getByRankIdAndFrequency", "/rank/get/**", "/rank/addFrequency/**", "/media/getRankMediaList", "/rank/mediaRankRelation/insert/**", "/rank/mediaRankRelation/getStepByOrder/**", "/rank/getDaySnapShotList/**");
+                web.ignoring().antMatchers("/security/login", "/oss/callback",  "/snapshot/getByRankIdAndFrequency", "/rank/get/**", "/rank/addFrequency/**", "/media/getRankMediaList", "/rank/mediaRankRelation/insert/**", "/rank/mediaRankRelation/getStepByOrder/**", "/rank/getDaySnapShotList/**", "/search/updateMediaUrl/**");
             }
         };
     }

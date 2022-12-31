@@ -9,9 +9,11 @@ import com.uidser.ppmusic.common.entity.vo.IndexVo;
 import com.uidser.ppmusic.common.entity.vo.MediaCommitVo;
 import com.uidser.ppmusic.common.entity.vo.QueryVo;
 import com.uidser.ppmusic.common.feign.RankFeignService;
+import com.uidser.ppmusic.common.feign.SearchFeignService;
 import com.uidser.ppmusic.common.mapper.MediaMapper;
 import com.uidser.ppmusic.common.r.R;
 import com.uidser.ppmusic.common.service.*;
+import io.seata.spring.annotation.GlobalTransactional;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.BeanUtils;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -60,7 +62,7 @@ public class MediaServiceImpl implements MediaService {
     private RabbitTemplate rabbitTemplate;
 
     @Resource
-    private RankMediaRelationService rankMediaRelationService;
+    private SearchFeignService searchFeignService;
 
     @Resource
     private CategorySingerRelationService categorySingerRelationService;
@@ -68,8 +70,14 @@ public class MediaServiceImpl implements MediaService {
     @Resource
     private CategoryService categoryService;
 
+    @Resource
+    private AlbumMediaRelationService albumMediaRelationService;
+
+    @Resource
+    private AlbumSingerRelationService albumSingerRelationService;
+
     @Override
-    @Transactional
+    @GlobalTransactional
     public Long insert(MediaCommitVo media) {
         Date date = new Date();
         Media media1 = new Media();
@@ -88,22 +96,51 @@ public class MediaServiceImpl implements MediaService {
         String singerNameJoin = String.join("，", singerNameList);
         List<Long> singerIdList1 = media1.getSingerIdList();
         media1.setSingerIdList(null);
+        media1.setIsDelete(0);
         media1.setAuthor(singerNameJoin);
         mediaMapper.insert(media1);
         CompletableFuture<Void> attributeValueRelation = CompletableFuture.runAsync(() -> {
             List<AttributeAttributeValueVo> attributeAttributeValueVoList = media.getAttributeAttributeValueVoList();
-            if (attributeAttributeValueVoList.size() > 0) {
-                for (AttributeAttributeValueVo attributeAttributeValueVo : attributeAttributeValueVoList) {
-                    attributeAttributeValueVo.setCreateTime(new Date());
+            if(attributeAttributeValueVoList != null) {
+                if (attributeAttributeValueVoList.size() > 0) {
+                    for (AttributeAttributeValueVo attributeAttributeValueVo : attributeAttributeValueVoList) {
+                        attributeAttributeValueVo.setCreateTime(new Date());
+                    }
+                    attributeValueService.insert(attributeAttributeValueVoList);
+                    attributeAttributeValueRelationService.relation(attributeAttributeValueVoList, media1.getId());
                 }
-                attributeValueService.insert(attributeAttributeValueVoList);
-                attributeAttributeValueRelationService.relation(attributeAttributeValueVoList, media1.getId());
             }
         }, threadPoolExecutor);
         CompletableFuture<Void> singerMediaRelation = CompletableFuture.runAsync(() -> {
             singerMediaRelationService.relation(media1.getId(), singerIdList1);
         }, threadPoolExecutor);
-        CompletableFuture<Void> allOf = CompletableFuture.allOf(attributeValueRelation, singerMediaRelation);
+        CompletableFuture<Void> albumMediaRelation = CompletableFuture.runAsync(() -> {
+            albumMediaRelationService.relation(media1.getAlbumId(), media1.getId());
+        }, threadPoolExecutor);
+        CompletableFuture.runAsync(() -> {
+            albumSingerRelationService.relation(media1.getAlbumId(), singerIdList1);
+        }, threadPoolExecutor);
+        CompletableFuture<Void> allOf = CompletableFuture.allOf(attributeValueRelation, singerMediaRelation, albumMediaRelation);
+        media1.setAlbumId(null);
+        media1.setPublishDate(null);
+        media1.setIsHaveMv(null);
+        media1.setCreateTime(null);
+        media1.setUpdateTime(null);
+        media1.setIsDelete(null);
+        media1.setShowStatus(null);
+        media1.setMediaUrl("");
+        List<Singer> singerList1 = singerService.getByIds(singerIdList1);
+        Map<Long, Singer> singerMap = singerList1.stream().collect(Collectors.toMap(singer -> singer.getId(), singer -> singer));
+        for (Long id: singerIdList1) {
+            MediaSingerESModel mediaSingerESModel = new MediaSingerESModel();
+            mediaSingerESModel.setId(id);
+            mediaSingerESModel.setName(singerMap.get(id).getName());
+            media1.getSinger().add(mediaSingerESModel);
+        }
+        Gson gson = new Gson();
+        String singerList2 = gson.toJson(singerList1);
+        redisTemplate.opsForHash().put("media:info:singer", media1.getId().toString(), singerList2);
+        searchFeignService.insertMedia(media1);
         try {
             allOf.get();
         } catch (InterruptedException e) {
@@ -115,7 +152,7 @@ public class MediaServiceImpl implements MediaService {
     }
 
     @Override
-    public void editMediaUrl(Integer mediaId, String url, String column) {
+    public void editMediaUrl(Long mediaId, String url, String column) {
         mediaMapper.editMediaUrl(mediaId, url, column);
     }
 
@@ -237,6 +274,14 @@ public class MediaServiceImpl implements MediaService {
     @Override
     public List<Media> getByIds(List<Long> mediaIdList, Integer type, Integer limit) {
         return mediaMapper.getByIds(mediaIdList, type, limit);
+    }
+
+    @Override
+    public List<Singer> getAuthor(Long mediaId) {
+        String jsonString = redisTemplate.opsForHash().get("media:info:singer", mediaId.toString()).toString();
+        Gson gson = new Gson();
+        List<Singer> singerList = gson.fromJson(jsonString, List.class);
+        return singerList;
     }
 
     private void packageCategory(List<Category> categoryList, Category category, List<Category> finalCategoryList) {

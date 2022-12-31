@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.uidser.ppmusic.common.mapper.AlbumSingerRelationMapper">
+    <insert id="relation">
+        INSERT INTO table_album_singer_relation(album_id, singer_id)
+        VALUES
+        <foreach collection="list" separator="," item="item">
+            (#{albumId}, #{item})
+        </foreach>
+    </insert>
+</mapper>

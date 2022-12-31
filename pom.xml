@@ -6,7 +6,6 @@
     <packaging>pom</packaging>
     <modules>
         <module>music-common</module>
-        <module>music-user</module>
         <module>music-gateway</module>
         <module>music-security</module>
         <module>music-admin</module>

@@ -3,6 +3,7 @@ package com.uidser.ppmusic.media.controller;
 import com.github.pagehelper.PageInfo;
 import com.uidser.ppmusic.common.entity.ListenQuantitySnapshot;
 import com.uidser.ppmusic.common.entity.Media;
+import com.uidser.ppmusic.common.entity.Singer;
 import com.uidser.ppmusic.common.entity.vo.QueryVo;
 import com.uidser.ppmusic.common.r.R;
 import com.uidser.ppmusic.common.service.MediaService;
@@ -32,6 +33,12 @@ public class MediaController {
     public R addPlayQuantity(@RequestBody ListenQuantitySnapshot listenQuantitySnapshot) {
         mediaService.addPlayQuantity(listenQuantitySnapshot);
         return new R().ok();
+    }
+
+    @GetMapping("/getAuthor/{mediaId}")
+    public R<List<Singer>> getAuthor(@PathVariable Long mediaId) {
+        List<Singer> singerList = mediaService.getAuthor(mediaId);
+        return new R<List<Singer>>().ok(singerList);
     }
 
 }

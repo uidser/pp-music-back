@@ -7,6 +7,7 @@ import co.elastic.clients.elasticsearch._types.query_dsl.Query;
 import co.elastic.clients.elasticsearch.core.IndexRequest;
 import co.elastic.clients.elasticsearch.core.SearchRequest;
 import co.elastic.clients.elasticsearch.core.SearchResponse;
+import co.elastic.clients.elasticsearch.core.UpdateRequest;
 import co.elastic.clients.elasticsearch.core.search.HighlightField;
 import co.elastic.clients.elasticsearch.core.search.Hit;
 import com.uidser.ppmusic.common.entity.Media;
@@ -15,7 +16,6 @@ import com.uidser.ppmusic.common.entity.vo.QueryVo;
 import com.uidser.ppmusic.search.entity.QueryReturnVo;
 import com.uidser.ppmusic.search.service.SearchService;
 import org.springframework.beans.BeanUtils;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -138,5 +138,81 @@ public class SearchServiceImpl implements SearchService {
             }
         }
         return singerList;
+    }
+
+    @Override
+    public List<Media> searchSingleSingerSong(Long singerId, QueryVo queryVo) {
+        Query singerIdQuery = Query.of(q -> q.nested(nq -> {
+            nq.path("singer");
+            nq.query(q2 -> q2.bool(bq -> bq.must(q3 -> q3.term(tq -> tq.field("singer.id").value(singerId)))));
+            return nq;
+        }));
+        Query nameQuery = Query.of(q -> q.match(mq -> mq.field("name").query(fv -> fv.stringValue(queryVo.getQueryText()))));
+        Query typeQuery = Query.of(q -> q.term(tq -> tq.field("type").value(11)));
+        List<Query> queryList = new ArrayList<>();
+        queryList.add(singerIdQuery);
+        queryList.add(nameQuery);
+        queryList.add(typeQuery);
+        SearchRequest searchRequest = SearchRequest.of(sr -> {
+            sr.index("media");
+            sr.query(q -> q.bool(bq -> bq.must(queryList)));
+            sr.size(1000);
+            sr.sort(so -> so.field(fs -> fs.field("playQuantity").order(SortOrder.Desc)));
+            return sr;
+        });
+        SearchResponse<Media> songSearchResponse = null;
+        try {
+            songSearchResponse = elasticsearchClient.search(searchRequest, Media.class);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        List<Hit<Media>> hits = songSearchResponse.hits().hits();
+        List<Media> mediaList = new ArrayList<>();
+        if(hits.size() > 0) {
+            for (Hit<Media> songHit: hits) {
+                Media media = new Media();
+                BeanUtils.copyProperties(songHit, media);
+                mediaList.add(media);
+            }
+        }
+        return mediaList;
+    }
+
+    @Override
+    public void insertMedia(Media media) {
+        IndexRequest<Object> mediaIndexRequest = IndexRequest.of(iro -> iro.index("media").id(media.getId().toString()).document(media));
+        try {
+            elasticsearchClient.index(mediaIndexRequest);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public void updateMediaUrl(Long mediaId, String path) {
+        SearchResponse<Media> search = null;
+        try {
+            search = elasticsearchClient.search(sr -> {
+                sr.index("media");
+                sr.query(q -> q.term(tq -> tq.field("_id").value(mediaId)));
+                return sr;
+            }, Media.class);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        Hit<Media> mediaHit = search.hits().hits().get(0);
+        Media media = mediaHit.source();
+        media.setMediaUrl(path);
+        UpdateRequest<Media, Object> mediaUpdate = UpdateRequest.of(ur -> {
+            ur.index("media");
+            ur.id(mediaId.toString());
+            ur.doc(media);
+            return ur;
+        });
+        try {
+            elasticsearchClient.update(mediaUpdate, Media.class);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

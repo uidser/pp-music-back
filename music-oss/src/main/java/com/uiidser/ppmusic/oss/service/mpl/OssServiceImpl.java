@@ -3,6 +3,7 @@ package com.uiidser.ppmusic.oss.service.mpl;
 import com.google.gson.Gson;
 import com.qiniu.util.Auth;
 import com.qiniu.util.StringMap;
+import com.uidser.ppmusic.common.feign.SearchFeignService;
 import com.uidser.ppmusic.common.service.MediaService;
 import com.uiidser.ppmusic.oss.service.OssService;
 import org.springframework.beans.factory.annotation.Value;
@@ -35,6 +36,9 @@ public class OssServiceImpl implements OssService {
 
     @Value("${callback}")
     private String callbackUrl;
+
+    @Resource
+    private SearchFeignService searchFeignService;
     @Override
     public String getUploadToken() {
         Gson gson = new Gson();
@@ -59,10 +63,13 @@ public class OssServiceImpl implements OssService {
         Boolean valid = auth.isValidCallback(authorization, callbackUrl, body, "application/json");
         if(valid) {
             map.put("url", url);
-            Integer mediaId = Integer.valueOf(map.get("mediaId").toString());
+            Long mediaId = Long.valueOf(map.get("mediaId").toString());
             String key = map.get("key").toString();
             String mediaUrl = "http://" + url + "/" + key;
             String column = map.get("column").toString();
+            if(column.equals("media_url")) {
+                searchFeignService.updateMediaUrl(mediaId, mediaUrl);
+            }
             mediaService.editMediaUrl(mediaId, mediaUrl, column);
         } else {
 
