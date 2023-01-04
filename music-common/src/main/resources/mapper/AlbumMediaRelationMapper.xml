@@ -5,4 +5,20 @@
         INSERT INTO table_album_media_relation(album_id, media_Id)
         VALUES(#{albumId}, #{mediaId})
     </insert>
+    <insert id="relationList">
+        INSERT INTO table_album_media_relation(album_id, media_Id)
+        VALUES
+        <foreach collection="list" item="item" separator=",">
+            (#{albumId}, #{item})
+        </foreach>
+    </insert>
+    <delete id="deleteRelation">
+        DELETE FROM table_album_media_relation
+        WHERE album_id = #{albumId}
+    </delete>
+    <select id="getByAlbumId" resultType="java.lang.Long">
+        SELECT media_id
+        FROM table_album_media_relation
+        WHERE album_id = #{albumId}
+    </select>
 </mapper>

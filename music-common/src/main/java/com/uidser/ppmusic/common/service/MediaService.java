@@ -39,4 +39,6 @@ public interface MediaService {
     List<Media> getByIds(List<Long> mediaIdList, Integer type, Integer limit);
 
     List<Singer> getAuthor(Long mediaId);
+
+    List<Media> getByIds(List<Long> songIdList);
 }

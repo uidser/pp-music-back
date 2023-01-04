@@ -8,4 +8,18 @@
             (#{albumId}, #{item})
         </foreach>
     </insert>
+    <select id="getRelationByAlbumId" resultType="com.uidser.ppmusic.common.entity.AlbumSingerRelation">
+        SELECT id,
+               album_id,
+               singer_id
+        FROM table_album_singer_relation
+        WHERE album_id = #{albumId}
+    </select>
+    <select id="getRelationBySingerId" resultType="com.uidser.ppmusic.common.entity.AlbumSingerRelation">
+        SELECT id,
+               album_id,
+               singer_id
+        FROM table_album_singer_relation
+        WHERE singer_id = #{singerId}
+    </select>
 </mapper>

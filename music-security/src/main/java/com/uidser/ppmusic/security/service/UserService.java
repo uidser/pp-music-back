@@ -14,4 +14,6 @@ public interface UserService {
     User get(Long id);
 
     void insert(User user);
+
+    User getByUserName(String username);
 }

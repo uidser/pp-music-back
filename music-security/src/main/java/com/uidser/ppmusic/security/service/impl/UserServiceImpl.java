@@ -60,4 +60,11 @@ public class UserServiceImpl implements UserService {
         user.setPassword(encode);
         userMapper.insert(user);
     }
+
+    @Override
+    public User getByUserName(String username) {
+        User user = userMapper.getByUserName(username);
+        user.setPassword(null);
+        return user;
+    }
 }

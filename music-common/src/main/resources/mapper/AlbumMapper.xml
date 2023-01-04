@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.uidser.ppmusic.common.mapper.AlbumMapper">
-    <insert id="insert">
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
         INSERT INTO table_album(name,
                                 singer_id,
                                 profile_picture,
@@ -13,7 +13,7 @@
         VALUES(#{name},
                #{singerId},
                #{profilePicture},
-               #{publish_date},
+               #{publishDate},
                #{detail},
                #{favoriteQuantity},
                #{showStatus},
@@ -53,7 +53,8 @@
                name,
                singer_id,
                profile_picture,
-               publish_date	detail,
+               publish_date,
+               detail,
                favorite_quantity,
                is_delete,
                show_status,
@@ -84,7 +85,8 @@
                name,
                singer_id,
                profile_picture,
-               publish_date	detail,
+               publish_date,
+               detail,
                favorite_quantity,
                is_delete,
                show_status,
@@ -92,5 +94,25 @@
                update_time
         FROM table_album
         WHERE id = #{id}
+    </select>
+    <select id="getByIdsAndLimit" resultType="com.uidser.ppmusic.common.entity.Album">
+        SELECT id,
+               name,
+               singer_id,
+               profile_picture,
+               publish_date,
+               detail,
+               favorite_quantity,
+               is_delete,
+               show_status,
+               create_time,
+               update_time
+        FROM table_album
+        WHERE id IN
+        <foreach collection="list" open="(" item="item" separator="," close=")">
+            #{item}
+        </foreach>
+        ORDER BY create_time DESC
+        LIMIT #{limit}
     </select>
 </mapper>

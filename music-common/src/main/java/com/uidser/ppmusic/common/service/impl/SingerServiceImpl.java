@@ -42,6 +42,12 @@ public class SingerServiceImpl implements SingerService {
     @Resource
     private SearchFeignService searchFeignService;
 
+    @Resource
+    private AlbumSingerRelationService albumSingerRelationService;
+
+    @Resource
+    private AlbumService albumService;
+
     @Override
     public List<Singer> query(String queryText) {
         return singerMapper.query(queryText);
@@ -105,7 +111,13 @@ public class SingerServiceImpl implements SingerService {
                 singerInfo.setSongList(mediaList);
             }
         });
-        CompletableFuture<Void> all = CompletableFuture.allOf(singerInfoCompletableFuture, songListMvListCompletableFuture);
+        CompletableFuture<Void> albumListCompletableFuture = CompletableFuture.runAsync(() -> {
+            List<AlbumSingerRelation> albumSingerRelationList = albumSingerRelationService.getRelationBySingerId(id, 10);
+            List<Long> albumIdList = albumSingerRelationList.stream().map(albumSingerRelation -> albumSingerRelation.getAlbumId()).collect(Collectors.toList());
+            List<Album> albumList = albumService.getByIdsAndLimit(albumIdList, 10);
+            singerInfo.setAlbumList(albumList);
+        }, threadPoolExecutor);
+        CompletableFuture<Void> all = CompletableFuture.allOf(singerInfoCompletableFuture, songListMvListCompletableFuture, albumListCompletableFuture);
         try {
             all.get();
         } catch (InterruptedException e) {

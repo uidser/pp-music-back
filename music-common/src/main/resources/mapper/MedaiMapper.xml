@@ -255,4 +255,33 @@
             LIMIT #{limit}
         </if>
     </select>
+    <select id="getByIdList" resultType="com.uidser.ppmusic.common.entity.Media">
+        SELECT id,
+               name,
+               author,
+               media_url,
+               singer_id,
+               album,
+               album_id,
+               play_quantity,
+               favorite_quantity,
+               media_profile_picture_img,
+               publish_date,
+               media_time,
+               mv_id,
+               type,
+               is_have_mv,
+               create_time,
+               update_time,
+               word,
+               mv,
+               is_delete,
+               show_status,
+               pre_publish_date
+        FROM table_media
+        WHERE id IN
+        <foreach collection="list" open="(" close=")" item="item" separator=",">
+            #{item}
+        </foreach>
+    </select>
 </mapper>

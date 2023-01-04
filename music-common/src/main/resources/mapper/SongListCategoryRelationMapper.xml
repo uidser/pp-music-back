@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.uidser.ppmusic.common.mapper.SongListCategoryRelationMapper">
+    <insert id="relation">
+        INSERT INTO table_song_list_category_relation(song_list_id, category_id)
+        VALUES
+        <foreach collection="categoryIdList" separator="," item="categoryId">
+            (#{songListId}, #{categoryId})
+        </foreach>
+    </insert>
+    <delete id="deleteRelation">
+        DELETE FROM table_song_list_category_relation WHERE song_list_id = #{id}
+    </delete>
+    <select id="getRelation" resultType="java.lang.Long">
+        SELECT category_id FROM table_song_list_category_relation WHERE song_list_id = #{id}
+    </select>
+    <select id="getAll" resultType="java.lang.Long">
+        SELECT category_id FROM table_song_list_category_relation GROUP BY category_id
+    </select>
+    <select id="getByCategoryId" resultType="java.lang.Long">
+        SELECT song_list_id FROM table_song_list_category_relation WHERE category_id = #{id}
+    </select>
+</mapper>

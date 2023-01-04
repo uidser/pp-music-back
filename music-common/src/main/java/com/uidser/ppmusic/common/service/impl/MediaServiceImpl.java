@@ -18,7 +18,6 @@ import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.BeanUtils;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
@@ -116,9 +115,6 @@ public class MediaServiceImpl implements MediaService {
         }, threadPoolExecutor);
         CompletableFuture<Void> albumMediaRelation = CompletableFuture.runAsync(() -> {
             albumMediaRelationService.relation(media1.getAlbumId(), media1.getId());
-        }, threadPoolExecutor);
-        CompletableFuture.runAsync(() -> {
-            albumSingerRelationService.relation(media1.getAlbumId(), singerIdList1);
         }, threadPoolExecutor);
         CompletableFuture<Void> allOf = CompletableFuture.allOf(attributeValueRelation, singerMediaRelation, albumMediaRelation);
         media1.setAlbumId(null);
@@ -282,6 +278,11 @@ public class MediaServiceImpl implements MediaService {
         Gson gson = new Gson();
         List<Singer> singerList = gson.fromJson(jsonString, List.class);
         return singerList;
+    }
+
+    @Override
+    public List<Media> getByIds(List<Long> songIdList) {
+        return mediaMapper.getByIdList(songIdList);
     }
 
     private void packageCategory(List<Category> categoryList, Category category, List<Category> finalCategoryList) {

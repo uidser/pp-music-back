@@ -47,4 +47,20 @@
             </if>
         </where>
     </select>
+    <select id="getByIdsAndShowStatus" resultType="com.uidser.ppmusic.common.entity.Category">
+        SELECT id,
+               parent_id,
+               name,
+               show_status,
+               is_delete,
+               create_time,
+               update_time
+        FROM table_category
+        WHERE id IN
+        <foreach collection="list" open="(" close=")" separator="," item="item">
+            #{item}
+        </foreach>
+        AND show_status = 1
+        AND is_delete = 0
+    </select>
 </mapper>

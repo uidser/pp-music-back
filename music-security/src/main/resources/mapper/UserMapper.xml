@@ -93,4 +93,20 @@
         FROM table_user
         WHERE id = #{id}
     </select>
+    <select id="getByUserName" resultType="com.uidser.ppmusic.common.entity.User">
+        SELECT id,
+               username,
+               password,
+               profile_picture,
+               nickname,
+               phone,
+               is_enable,
+               create_time,
+               update_time,
+               fans_quantity,
+               logout_time,
+               email
+        FROM table_user
+        WHERE username = #{username}
+    </select>
 </mapper>

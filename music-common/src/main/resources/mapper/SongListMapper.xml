@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.uidser.ppmusic.common.mapper.SongListMapper">
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO table_song_list(owner_id,
+                                    introduction,
+                                    show_status,
+                                    profile_picture,
+                                    forward_quantity,
+                                    comment_quantity,
+                                    favorite_quantity,
+                                    play_quantity,
+                                    create_time,
+                                    name)
+        VALUES(#{ownerId},
+               #{introduction},
+               #{showStatus},
+               #{profilePicture},
+               #{forwardQuantity},
+               #{commentQuantity},
+               #{playQuantity},
+               #{favoriteQuantity},
+               #{createTime},
+               #{name})
+    </insert>
+    <update id="edit">
+        UPDATE table_song_list SET owner_id = #{ownerId},
+                                   name = #{name},
+                                   show_status = #{showStatus},
+                                   introduction = #{introduction},
+                                   profile_picture = #{profilePicture},
+                                   is_delete = #{isDelete},
+                                   update_time = #{updateTime}
+        WHERE id = #{id}
+    </update>
+    <update id="changeShowStatus">
+        UPDATE table_song_list SET show_status = #{showStatus} WHERE id = #{id}
+    </update>
+    <update id="batchDelete">
+        UPDATE table_song_list SET is_delete = 1 WHERE
+        id IN
+        <foreach collection="list" separator="," item="item" open="(" close=")">
+            #{item}
+        </foreach>
+    </update>
+    <select id="list" resultType="com.uidser.ppmusic.common.entity.SongList">
+        SELECT id,
+               name,
+               show_status,
+               owner_id,
+               introduction,
+               profile_picture,
+               forward_quantity,
+               comment_quantity,
+               favorite_quantity,
+               play_quantity,
+               show_status,
+               is_delete,
+               create_time,
+               update_time
+        FROM table_song_list
+        <where>
+            is_delete = 0
+            <if test="queryText != null and queryText != ''">
+                AND (
+                id = #{queryText}
+                OR
+                owner_id = #{queryText}
+                OR
+                introduction LIKE "%"#{queryText}"%"
+                )
+            </if>
+            <if test="startTime != null">
+                AND create_time >= #{startTime}
+            </if>
+            <if test="endTime != null">
+                AND #{endTime} >= create_time
+            </if>
+        </where>
+    </select>
+    <select id="get" resultType="com.uidser.ppmusic.common.entity.SongList">
+        SELECT id,
+               name,
+               show_status,
+               owner_id,
+               introduction,
+               profile_picture,
+               forward_quantity,
+               comment_quantity,
+               favorite_quantity,
+               play_quantity,
+               show_status,
+               is_delete,
+               create_time,
+               update_time
+        FROM table_song_list
+        WHERE id = #{id}
+    </select>
+    <select id="listBySongListIdList" resultType="com.uidser.ppmusic.common.entity.SongList">
+        SELECT id,
+               name,
+               show_status,
+               owner_id,
+               introduction,
+               profile_picture,
+               forward_quantity,
+               comment_quantity,
+               play_quantity,
+               favorite_quantity,
+               show_status,
+               is_delete,
+               create_time,
+               update_time
+        FROM table_song_list
+        WHERE id IN
+        <foreach collection="list" open="(" close=")" separator="," item="item">
+            #{item}
+        </foreach>
+        AND show_status = 1
+        AND is_delete = 0
+        ORDER BY favorite_quantity DESC
+    </select>
+</mapper>

@@ -46,4 +46,10 @@ public class UserController {
         userService.insert(user);
         return new R().ok();
     }
+
+    @GetMapping("/getByUserName/{username}")
+    public R<User> getByUserName(@PathVariable String username) {
+        User user = userService.getByUserName(username);
+        return new R<User>().ok(user);
+    }
 }

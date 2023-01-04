@@ -28,4 +28,6 @@ public interface MediaMapper {
     void addPlayQuantitySelf(@Param("list") List<ListenQuantitySnapshot> listenQuantitySnapshotList1);
 
     List<Media> getByIds(@Param("list") List<Long> mediaIdList, @Param("type") Integer type, @Param("limit") Integer limit);
+
+    List<Media> getByIdList(@Param("list") List<Long> songIdList);
 }

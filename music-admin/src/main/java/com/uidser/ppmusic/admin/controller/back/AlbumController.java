@@ -2,7 +2,10 @@ package com.uidser.ppmusic.admin.controller.back;
 
 import com.github.pagehelper.PageInfo;
 import com.uidser.ppmusic.common.entity.Album;
+import com.uidser.ppmusic.common.entity.AlbumMediaRelation;
+import com.uidser.ppmusic.common.entity.Media;
 import com.uidser.ppmusic.common.entity.vo.QueryVo;
+import com.uidser.ppmusic.common.service.AlbumMediaRelationService;
 import com.uidser.ppmusic.common.service.AlbumService;
 import com.uidser.ppmusic.common.r.R;
 import org.checkerframework.checker.units.qual.A;
@@ -59,6 +62,18 @@ public class AlbumController {
     public R<Album> get(@PathVariable Long albumId) {
         Album album = albumService.get(albumId);
         return new R<Album>().ok(album);
+    }
+
+    @GetMapping("/getMediaByAlbumId/{albumId}")
+    public R<Album> getMediaByAlbumId(@PathVariable Long albumId) {
+        Album album = albumService.getAlbumAndSongList(albumId);
+        return new R<Album>().ok(album);
+    }
+
+    @PutMapping("/editRelation")
+    public R editRelation(@RequestBody AlbumMediaRelation albumMediaRelation) {
+        albumService.editRelation(albumMediaRelation);
+        return new R().ok();
     }
 
 }

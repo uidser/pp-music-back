@@ -12,7 +12,7 @@ public class Album {
     private String name;
     private Long singerId;
     private String profilePicture;
-    private Date publish_date;
+    private Date publishDate;
     private String detail;
     private Long favoriteQuantity;
     private Integer isDelete;
@@ -20,5 +20,8 @@ public class Album {
     private Date createTime;
     private Date updateTime;
     private List<Long> singerIds;
+    private List<Singer> singerList;
+    private List<Media> mediaList;
+    private List<Long> mediaIdList;
 
 }

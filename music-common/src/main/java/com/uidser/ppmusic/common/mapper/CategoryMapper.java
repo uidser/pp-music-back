@@ -24,4 +24,6 @@ public interface CategoryMapper {
     void edit(Category category);
 
     List<Category> getByIds(@Param("ids") Set<Long> categoryIds);
+
+    List<Category> getByIdsAndShowStatus(@Param("list") List<Long> longList);
 }

@@ -82,6 +82,9 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public void insert(Category category) {
         category.setCreateTime(new Date());
+        if(category.getParentId() == null) {
+            category.setParentId(0L);
+        }
         categoryMapper.insert(category);
     }
 
@@ -150,6 +153,11 @@ public class CategoryServiceImpl implements CategoryService {
             map.put(categorySingerRelation.getSingerId(), listList);
         }
         return map;
+    }
+
+    @Override
+    public List<Category> getByIdsAndShowStatus(List<Long> longList) {
+        return categoryMapper.getByIdsAndShowStatus(longList);
     }
 
     private void findPreviousCategoryId(Long categoryId, Map<Long, Category> categoryMap, List<Long> longList) {

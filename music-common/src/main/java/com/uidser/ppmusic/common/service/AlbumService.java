@@ -3,6 +3,8 @@ package com.uidser.ppmusic.common.service;
 
 import com.github.pagehelper.PageInfo;
 import com.uidser.ppmusic.common.entity.Album;
+import com.uidser.ppmusic.common.entity.AlbumMediaRelation;
+import com.uidser.ppmusic.common.entity.Media;
 import com.uidser.ppmusic.common.entity.vo.QueryVo;
 
 import java.util.List;
@@ -21,4 +23,10 @@ public interface AlbumService {
     PageInfo<Album> page(QueryVo queryVo);
 
     Album get(Long albumId);
+
+    List<Album> getByIdsAndLimit(List<Long> albumIdList, int limit);
+
+    Album getAlbumAndSongList(Long albumId);
+
+    void editRelation(AlbumMediaRelation albumMediaRelation);
 }

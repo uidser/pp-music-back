@@ -16,4 +16,6 @@ public interface UserMapper {
     User get(Long id);
 
     void insert(User user);
+
+    User getByUserName(@Param("username") String username);
 }

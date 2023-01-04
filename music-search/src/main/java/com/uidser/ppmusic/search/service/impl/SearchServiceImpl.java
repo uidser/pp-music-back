@@ -171,7 +171,7 @@ public class SearchServiceImpl implements SearchService {
         if(hits.size() > 0) {
             for (Hit<Media> songHit: hits) {
                 Media media = new Media();
-                BeanUtils.copyProperties(songHit, media);
+                BeanUtils.copyProperties(songHit.source(), media);
                 mediaList.add(media);
             }
         }

@@ -33,4 +33,6 @@ public interface CategoryService {
     public void packageMoreLevelCategory(Category category, List<Category> categoryList, List<Category> finalCategory);
 
     Map<Long, List<List<Long>>> getThreeLevelCategory(List<CategorySingerRelation> categorySingerRelationList);
+
+    List<Category> getByIdsAndShowStatus(List<Long> longList);
 }

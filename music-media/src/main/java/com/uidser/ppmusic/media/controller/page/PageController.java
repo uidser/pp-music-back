@@ -35,5 +35,4 @@ public class PageController {
         SingerListPage singerListPage = mediaService.singerList();
         return new R<SingerListPage>().ok(singerListPage);
     }
-
 }

@@ -21,4 +21,6 @@ public interface AlbumMapper {
      List<Album>page(QueryVo queryVo);
 
     Album get(Long albumId);
+
+    List<Album> getByIdsAndLimit(@Param("list") List<Long> albumIdList, @Param("limit") int limit);
 }

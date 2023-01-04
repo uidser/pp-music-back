@@ -19,7 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
-public class playQuantityListener {
+public class PlayQuantityListener {
 
     @Resource
     private MediaService mediaService;
